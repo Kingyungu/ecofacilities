@@ -1,0 +1,131 @@
+<?php
+/**
+ * facilities.phtml
+ *
+ * View template for displaying the facility search and listing page.
+ * Features:
+ * - Responsive search form with category filter
+ * - Results count display
+ * - Card-based facility listing
+ * - Bootstrap-based pagination
+ *
+ * Required view variables:
+ * - $view->searchTerm: Current search term
+ * - $view->selectedCategory: Selected category ID
+ * - $view->categories: Array of Category objects
+ * - $view->facilities: Array of EcoFacility objects
+ * - $view->resultCount: Total number of results
+ * - $view->totalPages: Total number of pages
+ * - $view->currentPage: Current page number
+ */
+?>
+
+<?php require('template/header.phtml') ?>
+
+    <div class="container mt-4">
+        <!-- Search and Filter Form Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <form class="card p-3" method="GET" action="facilities.php">
+                    <div class="row">
+                        <!-- Search Input -->
+                        <div class="col-md-6 mb-2">
+                            <input
+                                    type="text"
+                                    name="search"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($view->searchTerm ?? '') ?>"
+                                    placeholder="Search facilities..."
+                                    aria-label="Search facilities"
+                            >
+                        </div>
+
+                        <!-- Category Filter Dropdown -->
+                        <div class="col-md-4 mb-2">
+                            <select
+                                    name="category"
+                                    class="form-select"
+                                    aria-label="Select category filter"
+                            >
+                                <option value="">All Categories</option>
+                                <?php foreach ($view->categories as $category): ?>
+                                    <option
+                                            value="<?= $category->getId() ?>"
+                                        <?= ($view->selectedCategory == $category->getId()) ? 'selected' : '' ?>
+                                    >
+                                        <?= htmlspecialchars($category->getName()) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Count Display -->
+        <div class="row mb-3">
+            <div class="col">
+                <h4>
+                    Found <?= $view->resultCount ?> result<?= $view->resultCount != 1 ? 's' : '' ?>
+                </h4>
+            </div>
+        </div>
+
+        <!-- Facilities Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <?php foreach ($view->facilities as $facility): ?>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <!-- Facility Title -->
+                            <h5 class="card-title">
+                                <?= htmlspecialchars($facility->getTitle()) ?>
+                            </h5>
+
+                            <!-- Facility Description -->
+                            <p class="card-text">
+                                <?= htmlspecialchars($facility->getDescription()) ?>
+                            </p>
+
+                            <!-- Facility Address -->
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <?= htmlspecialchars($facility->getFullAddress()) ?>
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Pagination Navigation -->
+        <?php if ($view->totalPages > 1): ?>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <?php for ($i = 1; $i <= $view->totalPages; $i++): ?>
+                        <li class="page-item <?= $i === $view->currentPage ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?><?=
+                            $view->searchTerm ? '&search=' . urlencode($view->searchTerm) : ''
+                            ?><?=
+                            $view->selectedCategory ? '&category=' . $view->selectedCategory : ''
+                            ?>">
+                                <?= $i ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </nav>
+        <?php endif; ?>
+    </div>
+
+<?php require('template/footer.phtml') ?>

@@ -1,0 +1,211 @@
+/**
+ * ecoBuddy Custom Stylesheet
+ *
+ * A comprehensive stylesheet for the ecoBuddy system featuring:
+ * - Responsive layout
+ * - Custom color scheme
+ * - Component styling
+ * - Accessibility considerations
+ *
+ * Color Palette:
+ * - Primary: #f00 (Red)
+ * - Secondary: #fff (White)
+ * - Text: #000 (Black)
+ * - Light Gray: #f8f9fa
+ * - Border: #dee2e6
+ */
+
+/* ==========================================================================
+   Base Layout
+   ========================================================================== */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+main {
+    flex: 1; /* Ensures footer stays at bottom */
+}
+
+/* ==========================================================================
+   Navigation Components
+   ========================================================================== */
+.navbar {
+    border-top: solid 6px #f00;
+    border-bottom: solid 2px #f00;
+    background-color: #fff !important;
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    color: #000 !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #000 !important;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #f00 !important;
+}
+
+/* ==========================================================================
+   Content Area
+   ========================================================================== */
+#content {
+    background-color: #fff;
+    border-top: solid 6px #f00;
+    padding: 20px 0;
+}
+
+/* ==========================================================================
+   Search Components
+   ========================================================================== */
+.search-form {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ==========================================================================
+   Card Components
+   ========================================================================== */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-title {
+    color: #f00;
+    margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   Table Components
+   ========================================================================== */
+.table-responsive {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+/* ==========================================================================
+   Form Components
+   ========================================================================== */
+.form-control:focus,
+.form-select:focus {
+    border-color: #f00;
+    box-shadow: 0 0 0 0.2rem rgba(255,0,0,0.25);
+}
+
+/* ==========================================================================
+   Button Components
+   ========================================================================== */
+.btn-primary {
+    background-color: #f00;
+    border-color: #f00;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #d00;
+    border-color: #d00;
+}
+
+.btn-outline-primary {
+    color: #f00;
+    border-color: #f00;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-primary:hover {
+    background-color: #f00;
+    border-color: #f00;
+}
+
+/* ==========================================================================
+   Pagination Components
+   ========================================================================== */
+.pagination .page-link {
+    color: #f00;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #f00;
+    border-color: #f00;
+    color: #fff;
+}
+
+/* ==========================================================================
+   Alert Components
+   ========================================================================== */
+.alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* ==========================================================================
+   Footer Components
+   ========================================================================== */
+footer {
+    background-color: #fff !important;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 0;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .search-form {
+        padding: 1rem;
+    }
+
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+.text-red {
+    color: #f00;
+}
+
+.bg-light-gray {
+    background-color: #f8f9fa;
+}

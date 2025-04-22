@@ -1,0 +1,169 @@
+<?php
+/**
+ * index.phtml
+ *
+ * Main view template for the ecoBuddy system displaying:
+ * - Search and filter interface
+ * - Facility cards in a responsive grid
+ * - Pagination controls
+ *
+ * Required view variables:
+ * @var string $view->searchTerm Current search term
+ * @var int|null $view->selectedCategory Selected category ID
+ * @var array $view->categories Array of Category objects
+ * @var array $view->facilities Array of EcoFacility objects
+ * @var string $view->resultMessage Result count message
+ * @var int $view->totalPages Total number of pages
+ * @var int $view->currentPage Current page number
+ */
+?>
+
+<?php require('template/header.phtml') ?>
+
+    <div class="container mt-4">
+        <!-- Search and Filter Form -->
+        <div class="row mb-4">
+            <div class="col">
+                <form class="card p-3" method="GET">
+                    <div class="row">
+                        <!-- Search Input -->
+                        <div class="col-md-6 mb-2">
+                            <input
+                                    type="text"
+                                    name="search"
+                                    class="form-control"
+                                    placeholder="Search facilities..."
+                                    value="<?php echo htmlspecialchars($view->searchTerm); ?>"
+                                    aria-label="Search facilities"
+                            >
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="col-md-4 mb-2">
+                            <select
+                                    name="category"
+                                    class="form-select"
+                                    aria-label="Filter by category"
+                            >
+                                <option value="">All Categories</option>
+                                <?php foreach ($view->categories as $category): ?>
+                                    <option
+                                            value="<?php echo $category->getId(); ?>"
+                                        <?php echo $view->selectedCategory == $category->getId() ? 'selected' : ''; ?>
+                                    >
+                                        <?php echo htmlspecialchars($category->getName()); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="row mb-3">
+            <div class="col">
+                <p class="text-muted">
+                    <?php echo htmlspecialchars($view->resultMessage); ?>
+                </p>
+            </div>
+        </div>
+
+        <!-- Facilities Grid -->
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+            <?php foreach ($view->facilities as $facility): ?>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <!-- Facility Title -->
+                            <h5 class="card-title">
+                                <?php echo htmlspecialchars($facility->getTitle()); ?>
+                            </h5>
+
+                            <!-- Facility Category -->
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <?php
+                                // Find and display category name
+                                foreach ($view->categories as $category) {
+                                    if ($category->getId() == $facility->getCategory()) {
+                                        echo htmlspecialchars($category->getName());
+                                        break;
+                                    }
+                                }
+                                ?>
+                            </h6>
+
+                            <!-- Facility Description -->
+                            <p class="card-text">
+                                <?php echo htmlspecialchars($facility->getDescription()); ?>
+                            </p>
+
+                            <!-- Facility Address -->
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <?php echo htmlspecialchars($facility->getFullAddress()); ?>
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Pagination Controls -->
+        <?php if ($view->totalPages > 1): ?>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Page Link -->
+                    <li class="page-item <?php echo $view->currentPage <= 1 ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="?page=<?php echo $view->currentPage - 1; ?><?php
+                           echo !empty($view->searchTerm) ? '&search=' . urlencode($view->searchTerm) : '';
+                           echo $view->selectedCategory ? '&category=' . $view->selectedCategory : '';
+                           ?>"
+                           aria-label="Previous"
+                        >
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <?php for ($i = 1; $i <= $view->totalPages; $i++): ?>
+                        <li class="page-item <?php echo $view->currentPage == $i ? 'active' : ''; ?>">
+                            <a class="page-link"
+                               href="?page=<?php echo $i; ?><?php
+                               echo !empty($view->searchTerm) ? '&search=' . urlencode($view->searchTerm) : '';
+                               echo $view->selectedCategory ? '&category=' . $view->selectedCategory : '';
+                               ?>"
+                            >
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <!-- Next Page Link -->
+                    <li class="page-item <?php echo $view->currentPage >= $view->totalPages ? 'disabled' : ''; ?>">
+                        <a class="page-link"
+                           href="?page=<?php echo $view->currentPage + 1; ?><?php
+                           echo !empty($view->searchTerm) ? '&search=' . urlencode($view->searchTerm) : '';
+                           echo $view->selectedCategory ? '&category=' . $view->selectedCategory : '';
+                           ?>"
+                           aria-label="Next"
+                        >
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        <?php endif; ?>
+    </div>
+
+<?php require('template/footer.phtml') ?>

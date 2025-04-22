@@ -1,0 +1,101 @@
+id,title,category,description,houseNumber,streetName,county,town,postcode,lng,lat,contributor
+1,Renewable Energy Display at University,10,Educational display about renewable energy,47,Canal Street,Greater Manchester,Didsbury,M7 3XY,-2.2498,53.4704,2
+2,Green Display at Albert Square,9,Green technology demonstration,18,Princess Street,Greater Manchester,Bredbury,M24 4MN,-2.2425,53.4839,2
+3,Community Solar Array at Moss Side,4,Sustainable community hub,31,Palatine Road,Greater Manchester,Lees,M24 2HJ,-2.2096,53.4909,3
+4,Eco Education Center at Alexandra Park,9,Urban sustainability showcase,14,Meadow Lane,Greater Manchester,Atherton,M3 2DE,-2.2908,53.478,3
+5,Wildlife Corridor at Highfield Country Park,2,Secure bike storage facility with CCTV coverage,68,Dickenson Road,Greater Manchester,High Crompton,M22 2RS,-2.2585,53.4749,1
+6,Sustainable Point at Chapel Wharf,5,Clean technology showcase area,95,John Dalton Street,Greater Manchester,Heywood,M9 3RS,-2.2793,53.4747,1
+7,Public Water Refill Station at Northern Quarter,6,Electric scooter docking station,14,Piccadilly,Greater Manchester,Longsight,M18 1FG,-2.3417,53.4665,1
+8,Urban Farm at Ordsall Hall,8,Sustainable development center,43,Wilmslow Road,Greater Manchester,Didsbury,M1 3HD,-2.2112,53.4945,2
+9,Sustainable Point at Old Trafford,2,Air pollution reduction plantation,54,Willow Way,Greater Manchester,Alkrington,M3 2DE,-2.3198,53.4555,3
+10,Eco Learning Center at Clayton Hall,2,Sustainable transport information point,80,Victoria Street,Greater Manchester,Heaton Mersey,M26 3BC,-2.2609,53.4949,3
+11,Urban Garden at Islington Marina,3,Rainwater harvesting system display,26,Newton Street,Greater Manchester,High Crompton,M11 3BC,-2.2558,53.4726,1
+12,Urban Wildlife Garden at Peel Park,8,Clean technology education center,15,River Street,Greater Manchester,Hulme,M19 1PQ,-2.2849,53.4806,3
+13,Green Market at Kampus,5,Environmental monitoring equipment,36,Cross Street,Greater Manchester,Ainsworth,M20 2ZA,-2.2044,53.4508,3
+14,Sustainable Display at Corn Exchange,3,Wind turbine demonstration unit,85,Chester Road,Greater Manchester,Heaton Moor,M6 1HJ,-2.2121,53.4946,1
+15,Green Technology Center at Sharp Project,9,Green energy demonstration site,23,Turner Street,Greater Manchester,Heaton Mersey,M16 2RS,-2.2312,53.4522,2
+16,Urban Wildlife Garden at Peel Park,7,Bike sharing hub with multiple docking stations,80,Winter Gardens,Greater Manchester,Horwich,M23 1XY,-2.3382,53.4616,3
+17,Sustainable Space at Capital Quay,4,Clean energy demonstration unit,76,Pine Road,Greater Manchester,Limeside,M7 1TU,-2.2116,53.4686,3
+18,Eco Area at Parsonage Gardens,3,Electric bike charging station,20,Poplar Street,Greater Manchester,Gorton,M7 4ZA,-2.3206,53.4636,3
+19,Green Building Showcase at First Street,7,Electric vehicle charging points available 24/7,13,Alexandra Road,Greater Manchester,Beswick,M2 1RS,-2.2429,53.4592,1
+20,Green Hub at Exchange Court,9,Public composting demonstration site,10,Newton Street,Greater Manchester,Royton,M19 4VW,-2.2054,53.4749,1
+21,Sustainable Technology at MMU,10,Electric vehicle charging points available 24/7,32,Winter Gardens,Greater Manchester,Levenshulme,M6 2KL,-2.3128,53.492,1
+22,Eco Display at Greengate Square,7,Paper and cardboard recycling center,50,Green Lane,Greater Manchester,Newhey,M3 4HJ,-2.2231,53.4733,2
+23,Sustainable Garden at Vimto Gardens,1,Community tool library for shared resources,78,Stanley Grove,Greater Manchester,Greenfield,M2 1RS,-2.3117,53.4813,1
+24,Eco Display at Manchester Museum,8,Energy-efficient lighting showcase,10,Manor Road,Greater Manchester,Moorside,M5 2ZA,-2.2624,53.4566,3
+25,Public EV Charging at Deansgate,7,Urban ecology demonstration,39,Mill Lane,Greater Manchester,Worsley,M7 3XY,-2.2161,53.4998,3
+26,Recycling Bins at University Campus,2,Green infrastructure showcase,81,John Dalton Street,Greater Manchester,Withington,M8 3FG,-2.3367,53.487,1
+27,Urban Tech at Granada Studios,7,Energy monitoring display showing local usage,47,Market Street,Greater Manchester,Altrincham,M15 3KL,-2.2565,53.4564,3
+28,Urban Point at Cutting Room Square,3,Rain garden managing stormwater runoff,3,Quay Street,Greater Manchester,Lees,M23 3BC,-2.3406,53.4861,2
+29,Eco Garden at Cathedral Gardens,10,Green infrastructure demonstration,7,Plymouth Grove,Greater Manchester,Hyde,M8 5KL,-2.3443,53.4726,1
+30,Recycling Bins at University Campus,1,Environmental protection showcase,68,Talbot Road,Greater Manchester,Urmston,M1 5PQ,-2.3432,53.466,3
+31,Urban Garden at Islington Marina,7,Wind energy demonstration unit,64,Summer Street,Greater Manchester,Uppermill,M8 2DE,-2.2646,53.4816,1
+32,Solar-Powered Benches at Sackville Gardens,3,Smart city technology demonstration,2,Turner Street,Greater Manchester,Heaton Moor,M20 2ZA,-2.2714,53.4579,3
+33,Green Building Showcase at First Street,6,Electric vehicle charging points available 24/7,54,Green Lane,Greater Manchester,Sale,M3 2DE,-2.2329,53.4593,2
+34,Sustainable Food Hub at Mayfield,5,Sustainable materials demonstration area,28,Dickenson Road,Greater Manchester,Heaton Norris,M6 2KL,-2.3026,53.4867,3
+35,Green Building at St Peter's Square,2,Metal recycling collection point for residents,54,Kings Road,Greater Manchester,Golborne,M17 1XY,-2.2045,53.4932,1
+36,Battery Recycling Point at St Peters Square,7,Urban farming education center,43,School Lane,Greater Manchester,Heaton Norris,M26 3BC,-2.281,53.4876,3
+37,Eco Hub at Sadler's Yard,2,Rain garden managing stormwater runoff,98,Hyde Road,Greater Manchester,Farnworth,M22 2RS,-2.271,53.4636,1
+38,Wildlife Corridor at Highfield Country Park,4,Clean technology showcase area,78,Princess Parkway,Greater Manchester,Simister,M5 4DE,-2.3336,53.4564,1
+39,Urban Hub at St Michael's Flags,2,Climate action information center,30,Princess Parkway,Greater Manchester,Delph,M23 4DE,-2.3066,53.4586,1
+40,Green Space at St John's Gardens,7,Public water fountain with bottle refill option,23,Ocean Street,Greater Manchester,Hyde,M3 3FG,-2.3353,53.4526,1
+41,Eco-Friendly Transport Hub at Chorlton,6,Urban agriculture demonstration site,93,Thomas Street,Greater Manchester,Whitefield,M13 2RS,-2.2649,53.4807,2
+42,Eco Art Installation at HOME,7,Conveniently located recycling station for community use,82,River Street,Greater Manchester,Clayton,M19 4VW,-2.3014,53.4821,1
+43,Renewable Energy Display at University,9,Smart city technology demonstration,92,Water Street,Greater Manchester,Moss Side,M15 2HJ,-2.25,53.4699,2
+44,Urban Garden at Exchange Square,7,Sustainable transport showcase,72,Turner Street,Greater Manchester,Mossley,M3 5KL,-2.2949,53.4662,3
+45,Sustainable Food Hub at Mayfield,1,Environmental innovation hub,86,Riverside Drive,Greater Manchester,Limeside,M18 1FG,-2.2317,53.4642,1
+46,Urban Farm at Ordsall Hall,8,Environmental technology display,23,Wilmslow Road,Greater Manchester,Burnage,M21 4MN,-2.298,53.4523,2
+47,Renewable Tech Display at Angel Square,1,Urban agriculture demonstration site,56,High Street,Greater Manchester,Prestwich,M25 2RS,-2.2747,53.4531,1
+48,Eco-Friendly Transport Hub at Chorlton,10,Environmental conservation area,25,Windsor Road,Greater Manchester,Hollinwood,M1 4JE,-2.2942,53.4824,1
+49,Sustainable Technology at MMU,5,Clean technology education center,82,Alexandra Road,Greater Manchester,Shaw,M23 1XY,-2.2274,53.4986,2
+50,Green Building Showcase at First Street,7,Metal recycling collection point for residents,16,Palatine Road,Greater Manchester,Swinton,M12 2HJ,-2.2937,53.4905,3
+51,Green Building Showcase at First Street,5,Green technology demonstration,43,Railway Road,Greater Manchester,Greenfield,M15 4MN,-2.3113,53.4846,1
+52,Bike Share Station at Piccadilly Gardens,1,Environmental conservation area,21,Meadow Lane,Greater Manchester,Middleton,M18 2HJ,-2.2809,53.4641,1
+53,Sustainable Hub at Tony Wilson Place,9,Urban wildlife habitat garden,19,Port Road,Greater Manchester,Failsworth,M8 4HJ,-2.2742,53.4978,2
+54,Eco Display at Greengate Square,5,Environmental protection showcase,72,Bay View Road,Greater Manchester,Heywood,M25 2RS,-2.2105,53.4981,3
+55,Green Innovation at Technology Center,2,Sustainable community showcase,74,Meadow Lane,Greater Manchester,Stretford,M4 2PQ,-2.3216,53.4589,3
+56,Urban Display at Cotton Field Marina,3,Food waste collection point for local composting,44,John Dalton Street,Greater Manchester,Ramsbottom,M11 1XY,-2.3085,53.4517,1
+57,Electric Bike Station at Oxford Road,10,Wildlife corridor demonstration,58,Meadow Lane,Greater Manchester,Eccles,M1 2BB,-2.2758,53.4562,2
+58,Green Building at St Peter's Square,9,Environmental education kiosk,30,Oldham Road,Greater Manchester,Farnworth,M5 2ZA,-2.2963,53.489,3
+59,Urban Display at Cotton Field Marina,4,Sustainable transport showcase,70,Spring Gardens,Greater Manchester,Ashton-under-Lyne,M18 3KL,-2.3375,53.4943,3
+60,Wind Turbine Display at Science Park,2,Public composting demonstration site,81,Portland Street West,Greater Manchester,Hulme,M20 3BC,-2.2969,53.482,2
+61,Green Technology at Manchester Arena,5,Energy monitoring display showing local usage,75,Holly Road,Greater Manchester,Failsworth,M12 1FG,-2.2685,53.4956,1
+62,Green Innovation at Technology Center,1,Wind-powered mobile device charging station,57,Maple Road,Greater Manchester,Diggle,M8 2DE,-2.253,53.483,3
+63,Eco Center at Angel Gardens,7,Urban ecology education point,47,Hill Street,Greater Manchester,Gorton,M18 1FG,-2.3351,53.4732,3
+64,Green Hub at Middlewood Locks,9,Green technology innovation display,72,Thomas Street,Greater Manchester,Tyldesley,M17 3BC,-2.2493,53.4717,1
+65,Electric Bike Station at Oxford Road,5,Sustainable community showcase,5,Chapel Street,Greater Manchester,Stalybridge,M15 4MN,-2.3013,53.4652,3
+66,Green Market at Kampus,3,Green energy demonstration site,83,Valley Road,Greater Manchester,Bolton,M24 2HJ,-2.3447,53.4847,3
+67,Bike Share Station at Piccadilly Gardens,8,Plastic bottle recycling station with counter display,10,Quay Street,Greater Manchester,High Crompton,M26 3BC,-2.323,53.4924,2
+68,Bike Repair Station at Castlefield,7,Sustainable materials demonstration area,3,Garden Street,Greater Manchester,Clayton,M6 4PQ,-2.2633,53.499,2
+69,Urban Garden at Exchange Square,2,Green wall installation improving air quality,48,Park Avenue,Greater Manchester,Moston,M13 1PQ,-2.2723,53.4528,2
+70,Solar Garden at Whitworth Gallery,10,Sustainable materials recycling point,8,Talbot Road,Greater Manchester,Bardsley,M2 4VW,-2.3362,53.4625,1
+71,Wind Power Display at People's History Museum,9,Educational display about renewable energy,99,River Street,Greater Manchester,Rochdale,M7 1TU,-2.2312,53.484,1
+72,Community Composting at Platt Fields,4,Renewable resources information point,65,Oak Road,Greater Manchester,Hindley,M23 1XY,-2.2606,53.4532,2
+73,Urban Eco Center at Northern Quarter,1,Urban beehive supporting local pollinators,89,Hyde Road,Greater Manchester,Bramhall,M24 1FG,-2.3045,53.4691,2
+74,Eco Center at Riverpark Gardens,8,Energy-efficient lighting showcase,8,Upper Brook Street,Greater Manchester,Audenshaw,M24 1FG,-2.2634,53.4898,2
+75,Eco Art Installation at HOME,3,Green wall installation improving air quality,43,Elm Street,Greater Manchester,Swinton,M1 1AA,-2.291,53.4806,2
+76,Green Market at Kampus,9,Smart waste bin with compactor,36,Park Avenue,Greater Manchester,Diggle,M19 1PQ,-2.2699,53.4548,3
+77,Vertical Garden at Manchester One,5,Urban sustainability education center,63,Spring Street,Greater Manchester,Rhodes,M11 3BC,-2.2059,53.4904,1
+78,Urban Garden at Exchange Square,5,Green infrastructure showcase,90,Valley Road,Greater Manchester,Little Lever,M23 4DE,-2.3388,53.4912,2
+79,Urban Tech at Granada Studios,6,Green transport hub demonstration,79,Quay Street,Greater Manchester,Astley,M15 3KL,-2.3122,53.4914,3
+80,Sustainable Hub at Tony Wilson Place,4,E-waste collection point for electronics recycling,69,Platt Lane,Greater Manchester,Bredbury,M2 5XY,-2.244,53.4867,3
+81,Green Hub at Middlewood Locks,1,Sustainable energy demonstration unit,71,Wilmslow Road,Greater Manchester,Fallowfield,M24 1FG,-2.2401,53.4936,1
+82,Green Building Demo at City Tower,3,Community tool library for shared resources,30,Portland Street,Greater Manchester,Chadderton,M7 1TU,-2.2001,53.4689,2
+83,Community Garden at Angel Meadow,7,Sustainable technology showcase,50,Ash Grove,Greater Manchester,Bardsley,M15 1FG,-2.2902,53.4783,1
+84,Sustainable Center at Lincoln Square,6,Wildlife corridor demonstration,89,Dock Street,Greater Manchester,Offerton,M14 4DE,-2.3147,53.4924,2
+85,Green Building at St Peter's Square,9,Sustainable community showcase,18,Oldham Street,Greater Manchester,Salford,M9 4TU,-2.2006,53.4695,2
+86,Green Market at Kampus,9,Energy-efficient lighting showcase,96,Church Street,Greater Manchester,Bredbury,M12 2HJ,-2.3021,53.4728,3
+87,Eco Display at Manchester Museum,4,Wind energy demonstration unit,75,Stretford Road,Greater Manchester,Stockport,M3 5KL,-2.3143,53.4829,2
+88,Sustainable Food Hub at Mayfield,10,Sustainable energy demonstration unit,89,Princess Street,Greater Manchester,Sale,M5 4DE,-2.2378,53.4654,3
+89,Sustainable Center at Lincoln Square,7,Community garden with composting facilities,72,Plymouth Grove,Greater Manchester,Urmston,M5 1XY,-2.2113,53.4656,1
+90,Eco Art Installation at HOME,4,Urban greening showcase area,22,Water Street,Greater Manchester,Royton,M9 5VW,-2.3492,53.4795,2
+91,Sustainable Display at Corn Exchange,10,Zero waste shopping information point,58,Elm Street,Greater Manchester,Clayton,M20 2ZA,-2.2871,53.4743,2
+92,Eco Education Center at Alexandra Park,9,Green wall installation improving air quality,18,Albert Road,Greater Manchester,Greenfield,M16 3TU,-2.2566,53.4519,1
+93,Eco Point at Symphony Park,1,Public composting demonstration site,62,Poplar Street,Greater Manchester,Reddish,M5 3BC,-2.3388,53.4834,1
+94,Community Composting at Platt Fields,4,Rainwater harvesting system display,74,Mill Lane,Greater Manchester,Leigh,M6 3MN,-2.2941,53.4608,2
+95,Vertical Garden at Manchester One,6,Clean technology education center,45,Wilmslow Road,Greater Manchester,Atherton,M5 2ZA,-2.3474,53.4777,1
+96,Sustainable Point at Old Trafford,10,Metal recycling collection point for residents,24,Palatine Road,Greater Manchester,Ainsworth,M1 2BB,-2.2989,53.4663,2
+97,Bike Repair Station at Castlefield,6,Sustainable transport showcase,7,Chorlton Road,Greater Manchester,Atherton,M16 3TU,-2.2138,53.4593,2
+98,Green Transport Point at Victoria Gardens,2,Urban ecology education point,74,Chester Street,Greater Manchester,Heaton Chapel,M23 2ZA,-2.3176,53.4945,3
+99,Sustainable Living Display at Arndale,9,Renewable energy demonstration site,75,Swan Street,Greater Manchester,Oldham,M21 3KL,-2.2823,53.4955,3
+100,Solar Panel Demonstration at MOSI,4,Environmental innovation hub,57,Winter Gardens,Greater Manchester,Kearsley,M17 2ZA,-2.2576,53.497,3

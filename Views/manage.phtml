@@ -1,0 +1,237 @@
+<?php
+/**
+ * manage.phtml
+ *
+ * Administrative interface for managing ecological facilities.
+ * Features:
+ * - Add/Edit facility form
+ * - Facility listing table
+ * - CRUD operations
+ *
+ * Required view variables:
+ * @var string|null $view->message Success/error message
+ * @var EcoFacility|null $view->editFacility Facility being edited
+ * @var array $view->categories Available categories
+ * @var array $view->facilities List of all facilities
+ */
+?>
+
+<?php require('template/header.phtml') ?>
+
+    <div class="container mt-4">
+        <!-- Success Message Display -->
+        <?php if ($view->message): ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo htmlspecialchars($view->message); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Add/Edit Form Section -->
+        <div class="row mb-4">
+            <div class="col">
+                <h2>
+                    <?php echo $view->editFacility ? 'Edit' : 'Add New' ?> Facility
+                </h2>
+
+                <form method="POST" class="card p-3" novalidate>
+                    <!-- Form Action Fields -->
+                    <input type="hidden" name="action" value="save">
+                    <?php if ($view->editFacility): ?>
+                        <input type="hidden" name="id"
+                               value="<?php echo $view->editFacility->getId(); ?>">
+                    <?php endif; ?>
+
+                    <!-- Basic Information -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text"
+                               class="form-control"
+                               id="title"
+                               name="title"
+                               required
+                               value="<?php echo $view->editFacility ?
+                                   htmlspecialchars($view->editFacility->getTitle()) : ''; ?>"
+                        >
+                    </div>
+
+                    <!-- Category Selection -->
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <?php foreach ($view->categories as $category): ?>
+                                <option value="<?php echo $category->getId(); ?>"
+                                    <?php echo $view->editFacility &&
+                                    $view->editFacility->getCategory() == $category->getId() ?
+                                        'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($category->getName()); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Facility Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control"
+                                  id="description"
+                                  name="description"
+                                  required><?php
+                            echo $view->editFacility ?
+                                htmlspecialchars($view->editFacility->getDescription()) : '';
+                            ?></textarea>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="houseNumber" class="form-label">House Number</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="houseNumber"
+                                   name="houseNumber"
+                                   value="<?php echo $view->editFacility ?
+                                       htmlspecialchars($view->editFacility->getHouseNumber()) : ''; ?>"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="streetName" class="form-label">Street Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="streetName"
+                                   name="streetName"
+                                   value="<?php echo $view->editFacility ?
+                                       htmlspecialchars($view->editFacility->getStreetName()) : ''; ?>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="town" class="form-label">Town</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="town"
+                                   name="town"
+                                   required
+                                   value="<?php echo $view->editFacility ?
+                                       htmlspecialchars($view->editFacility->getTown()) : ''; ?>"
+                            >
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="county" class="form-label">County</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="county"
+                                   name="county"
+                                   required
+                                   value="<?php echo $view->editFacility ?
+                                       htmlspecialchars($view->editFacility->getCounty()) : ''; ?>"
+                            >
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="postcode" class="form-label">Postcode</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="postcode"
+                                   name="postcode"
+                                   required
+                                   value="<?php echo $view->editFacility ?
+                                       htmlspecialchars($view->editFacility->getPostcode()) : ''; ?>"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Geographical Coordinates -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="lat" class="form-label">Latitude</label>
+                            <input type="number"
+                                   step="any"
+                                   class="form-control"
+                                   id="lat"
+                                   name="lat"
+                                   required
+                                   value="<?php echo $view->editFacility ?
+                                       $view->editFacility->getLat() : ''; ?>"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lng" class="form-label">Longitude</label>
+                            <input type="number"
+                                   step="any"
+                                   class="form-control"
+                                   id="lng"
+                                   name="lng"
+                                   required
+                                   value="<?php echo $view->editFacility ?
+                                       $view->editFacility->getLng() : ''; ?>"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo $view->editFacility ? 'Update' : 'Add' ?> Facility
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Facilities List Section -->
+        <div class="row">
+            <div class="col">
+                <h2>Manage Facilities</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($view->facilities as $facility): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($facility->getTitle()); ?></td>
+                                <td>
+                                    <?php
+                                    foreach ($view->categories as $category) {
+                                        if ($category->getId() == $facility->getCategory()) {
+                                            echo htmlspecialchars($category->getName());
+                                            break;
+                                        }
+                                    }
+                                    ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($facility->getFullAddress()); ?></td>
+                                <td>
+                                    <a href="?edit=<?php echo $facility->getId(); ?>"
+                                       class="btn btn-sm btn-primary"
+                                       aria-label="Edit facility">
+                                        Edit
+                                    </a>
+                                    <form method="POST"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this facility?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id"
+                                               value="<?php echo $facility->getId(); ?>">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                aria-label="Delete facility">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php require('template/footer.phtml') ?>
