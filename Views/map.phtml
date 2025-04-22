@@ -1,0 +1,348 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left sidebar with search filters -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Search Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="searchForm">
+                            <!-- Add CSRF token -->
+                            <input type="hidden" name="csrfToken" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+                            <input type="hidden" name="page" value="1">
+
+                            <!-- Search term -->
+                            <div class="mb-3">
+                                <label for="searchTerm" class="form-label">Search</label>
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="searchTerm"
+                                        name="searchTerm"
+                                        placeholder="Search facilities..."
+                                        value="<?php echo isset($_GET['searchTerm']) ? htmlspecialchars($_GET['searchTerm']) : ''; ?>"
+                                    >
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Category filter -->
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">All Categories</option>
+                                    <?php foreach ($view->categories as $category): ?>
+                                        <option
+                                            value="<?php echo $category->getId(); ?>"
+                                            <?php echo isset($_GET['category']) && $_GET['category'] == $category->getId() ? 'selected' : ''; ?>
+                                        >
+                                            <?php echo htmlspecialchars($category->getName()); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- Town filter -->
+                            <div class="mb-3">
+                                <label for="town" class="form-label">Town</label>
+                                <select class="form-select" id="town" name="town">
+                                    <option value="">All Towns</option>
+                                    <?php foreach ($view->towns as $town): ?>
+                                        <option
+                                            value="<?php echo htmlspecialchars($town); ?>"
+                                            <?php echo isset($_GET['town']) && $_GET['town'] == $town ? 'selected' : ''; ?>
+                                        >
+                                            <?php echo htmlspecialchars($town); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- County filter -->
+                            <div class="mb-3">
+                                <label for="county" class="form-label">County</label>
+                                <select class="form-select" id="county" name="county">
+                                    <option value="">All Counties</option>
+                                    <?php foreach ($view->counties as $county): ?>
+                                        <option
+                                            value="<?php echo htmlspecialchars($county); ?>"
+                                            <?php echo isset($_GET['county']) && $_GET['county'] == $county ? 'selected' : ''; ?>
+                                        >
+                                            <?php echo htmlspecialchars($county); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content: map and results -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Map container -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Facility Map</h5>
+                        <button id="locateMe" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-geo-alt"></i> Locate Me
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map" style="height: 500px;"></div>
+                    </div>
+                </div>
+
+                <!-- Results section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            Search Results
+                            <span class="badge bg-secondary ms-2"><?php echo count($view->facilities); ?> of <?php echo $view->totalResults; ?></span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <?php if (count($view->facilities) > 0): ?>
+                            <div class="row row-cols-1 row-cols-md-2 g-4" id="searchResults">
+                                <?php foreach ($view->facilities as $facility): ?>
+                                    <div class="col">
+                                        <div class="card h-100 facility-item" data-facility-id="<?php echo $facility->getId(); ?>">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-red"><?php echo htmlspecialchars($facility->getTitle()); ?></h5>
+
+                                                <?php
+                                                // Get category name
+                                                $categoryName = "Unknown";
+                                                foreach ($view->categories as $category) {
+                                                    if ($category->getId() == $facility->getCategory()) {
+                                                        $categoryName = $category->getName();
+                                                        break;
+                                                    }
+                                                }
+                                                ?>
+
+                                                <span class="badge bg-secondary mb-2"><?php echo htmlspecialchars($categoryName); ?></span>
+
+                                                <p class="card-text"><?php echo htmlspecialchars($facility->getDescription()); ?></p>
+
+                                                <p class="card-text small">
+                                                    <strong>Address:</strong> <?php echo htmlspecialchars($facility->getFullAddress()); ?>
+                                                </p>
+
+                                                <?php if (isset($view->statuses[$facility->getId()])): ?>
+                                                    <p class="card-text small text-muted">
+                                                        <strong>Status:</strong> <?php echo htmlspecialchars($view->statuses[$facility->getId()]->getComment()); ?>
+                                                        <span class="d-block"><?php echo $view->statuses[$facility->getId()]->getTimeElapsed(); ?></span>
+                                                    </p>
+                                                <?php endif; ?>
+
+                                                <button class="btn btn-sm btn-outline-primary mt-2 view-on-map-btn">
+                                                    View on Map
+                                                </button>
+
+                                                <?php if ($user->isLoggedIn()): ?>
+                                                    <button
+                                                        class="btn btn-sm btn-outline-secondary mt-2 ms-2 update-status-btn"
+                                                        data-facility-id="<?php echo $facility->getId(); ?>"
+                                                    >
+                                                        Update Status
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <!-- Pagination -->
+                            <?php if ($view->totalPages > 1): ?>
+                                <nav aria-label="Search results pagination" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        <!-- Previous page link -->
+                                        <li class="page-item <?php echo $view->currentPage <= 1 ? 'disabled' : ''; ?>">
+                                            <a
+                                                class="page-link"
+                                                href="<?php echo $view->currentPage > 1 ? '?page=' . ($view->currentPage - 1) . (isset($_GET['searchTerm']) ? '&searchTerm=' . urlencode($_GET['searchTerm']) : '') . (isset($_GET['category']) ? '&category=' . $_GET['category'] : '') : '#'; ?>"
+                                                aria-label="Previous"
+                                            >
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+
+                                        <!-- Page number links -->
+                                        <?php
+                                        $startPage = max(1, $view->currentPage - 2);
+                                        $endPage = min($view->totalPages, $startPage + 4);
+
+                                        for ($i = $startPage; $i <= $endPage; $i++):
+                                            ?>
+                                            <li class="page-item <?php echo $i === $view->currentPage ? 'active' : ''; ?>">
+                                                <a
+                                                    class="page-link"
+                                                    href="?page=<?php echo $i . (isset($_GET['searchTerm']) ? '&searchTerm=' . urlencode($_GET['searchTerm']) : '') . (isset($_GET['category']) ? '&category=' . $_GET['category'] : ''); ?>"
+                                                >
+                                                    <?php echo $i; ?>
+                                                </a>
+                                            </li>
+                                        <?php endfor; ?>
+
+                                        <!-- Next page link -->
+                                        <li class="page-item <?php echo $view->currentPage >= $view->totalPages ? 'disabled' : ''; ?>">
+                                            <a
+                                                class="page-link"
+                                                href="<?php echo $view->currentPage < $view->totalPages ? '?page=' . ($view->currentPage + 1) . (isset($_GET['searchTerm']) ? '&searchTerm=' . urlencode($_GET['searchTerm']) : '') . (isset($_GET['category']) ? '&category=' . $_GET['category'] : '') : '#'; ?>"
+                                                aria-label="Next"
+                                            >
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            <?php endif; ?>
+
+                        <?php else: ?>
+                            <div class="alert alert-info">
+                                No facilities found matching your criteria.
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status update modal -->
+    <div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-labelledby="statusUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusUpdateModalLabel">Update Facility Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="statusUpdateForm">
+                        <input type="hidden" id="facilityId" name="facilityId">
+                        <input type="hidden" id="csrfToken" name="csrfToken" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+                        <div class="mb-3">
+                            <label for="statusComment" class="form-label">Status Comment</label>
+                            <textarea
+                                class="form-control"
+                                id="statusComment"
+                                name="statusComment"
+                                rows="3"
+                                maxlength="100"
+                                placeholder="e.g., 'Not working', 'Bin is full', 'Shop is closed'"
+                                required
+                            ></textarea>
+                            <div class="form-text">Describe the current status of this facility (100 chars max)</div>
+                        </div>
+                    </form>
+                    <div id="statusUpdateError" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <!-- Custom JS -->
+    <script src="js/Utilities.js"></script>
+    <script src="js/MapManager.js"></script>
+    <script src="js/StatusManager.js"></script>
+    <script src="js/SearchManager.js"></script>
+
+    <script>
+        // Initialize with facility data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create facility data array for map
+            const facilities = <?php echo json_encode(array_map(function($facility) {
+                return [
+                    'id' => $facility->getId(),
+                    'title' => $facility->getTitle(),
+                    'category' => $facility->getCategory(),
+                    'description' => $facility->getDescription(),
+                    'fullAddress' => $facility->getFullAddress(),
+                    'lat' => $facility->getCoordinates()['lat'],
+                    'lng' => $facility->getCoordinates()['lng'],
+                    'statusComment' => isset($view->statuses[$facility->getId()]) ? $view->statuses[$facility->getId()]->getComment() : null
+                ];
+            }, $view->facilities)); ?>;
+
+            // Initialize map manager
+            const isAuthenticated = <?php echo $user->isLoggedIn() ? 'true' : 'false'; ?>;
+            window.mapManager = new MapManager('map', facilities, isAuthenticated);
+            window.mapManager.initialize();
+
+            // Initialize status manager if user is authenticated
+            if (isAuthenticated) {
+                window.statusManager = new StatusManager(true);
+            }
+
+            // Initialize search manager
+            window.searchManager = new SearchManager('searchForm', 'searchResults', window.mapManager);
+
+            // Set up event listeners for facility cards
+            document.querySelectorAll('.facility-item').forEach(item => {
+                // Add click handler to center map on facility
+                item.addEventListener('click', function() {
+                    const facilityId = parseInt(this.getAttribute('data-facility-id'));
+                    window.mapManager.centerMapOnFacility(facilityId);
+                });
+
+                // Add click handler for "View on Map" buttons
+                const viewBtn = item.querySelector('.view-on-map-btn');
+                if (viewBtn) {
+                    viewBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card click event
+                        const facilityId = parseInt(item.getAttribute('data-facility-id'));
+                        window.mapManager.centerMapOnFacility(facilityId);
+                    });
+                }
+
+                // Add click handler for status update buttons
+                const statusBtn = item.querySelector('.update-status-btn');
+                if (statusBtn && isAuthenticated) {
+                    statusBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card click event
+                        const facilityId = parseInt(this.getAttribute('data-facility-id'));
+                        window.statusManager.openStatusModal(facilityId);
+                    });
+                }
+            });
+
+            // "Locate me" button handler
+            document.getElementById('locateMe').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            window.mapManager.map.setView([lat, lng], 14);
+                        },
+                        function(error) {
+                            Utilities.showNotification('Could not get your location. Error: ' + error.message, 'error');
+                        }
+                    );
+                } else {
+                    Utilities.showNotification('Geolocation is not supported by your browser', 'error');
+                }
+            });
+        });
+    </script>
+
+<?php require('template/footer.phtml') ?>

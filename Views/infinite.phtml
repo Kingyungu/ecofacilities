@@ -1,0 +1,227 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left sidebar with filter form -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="filterForm">
+                            <!-- Add CSRF token -->
+                            <input type="hidden" name="csrfToken" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+
+                            <!-- Category filter -->
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">All Categories</option>
+                                    <?php foreach ($view->categories as $category): ?>
+                                        <option value="<?php echo $category->getId(); ?>">
+                                            <?php echo htmlspecialchars($category->getName()); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- Town filter -->
+                            <div class="mb-3">
+                                <label for="town" class="form-label">Town</label>
+                                <select class="form-select" id="town" name="town">
+                                    <option value="">All Towns</option>
+                                    <?php foreach ($view->towns as $town): ?>
+                                        <option value="<?php echo htmlspecialchars($town); ?>">
+                                            <?php echo htmlspecialchars($town); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- County filter -->
+                            <div class="mb-3">
+                                <label for="county" class="form-label">County</label>
+                                <select class="form-select" id="county" name="county">
+                                    <option value="">All Counties</option>
+                                    <?php foreach ($view->counties as $county): ?>
+                                        <option value="<?php echo htmlspecialchars($county); ?>">
+                                            <?php echo htmlspecialchars($county); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <button type="button" class="btn btn-outline-secondary" id="clearFilters">Clear Filters</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content with map and infinite scroll results -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Map container -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Facility Map</h5>
+                        <button id="locateMe" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-geo-alt"></i> Locate Me
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map" style="height: 400px;"></div>
+                    </div>
+                </div>
+
+                <!-- Results section -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            All Facilities
+                            <span class="badge bg-secondary ms-2" id="resultCount"><?php echo $view->totalFacilities; ?> total</span>
+                        </h5>
+                        <button id="scrollToTop" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-up"></i> Back to Top
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Results container for infinite scroll -->
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="facilitiesContainer">
+                            <!-- Initial facilities will be loaded here by JavaScript -->
+                        </div>
+
+                        <!-- Loading indicator (will be shown/hidden by JS) -->
+                        <div id="loadingIndicator" class="text-center py-3 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading more facilities...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status update modal -->
+    <div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-labelledby="statusUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusUpdateModalLabel">Update Facility Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="statusUpdateForm">
+                        <input type="hidden" id="facilityId" name="facilityId">
+                        <input type="hidden" id="csrfToken" name="csrfToken" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+                        <div class="mb-3">
+                            <label for="statusComment" class="form-label">Status Comment</label>
+                            <textarea
+                                class="form-control"
+                                id="statusComment"
+                                name="statusComment"
+                                rows="3"
+                                maxlength="100"
+                                placeholder="e.g., 'Not working', 'Bin is full', 'Shop is closed'"
+                                required
+                            ></textarea>
+                            <div class="form-text">Describe the current status of this facility (100 chars max)</div>
+                        </div>
+                    </form>
+                    <div id="statusUpdateError" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <!-- Custom JS -->
+    <script src="js/Utilities.js"></script>
+    <script src="js/MapManager.js"></script>
+    <script src="js/StatusManager.js"></script>
+    <script src="js/InfiniteScrollManager.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map with empty facilities array (will be populated by infinite scroll)
+            const isAuthenticated = <?php echo $user->isLoggedIn() ? 'true' : 'false'; ?>;
+            window.mapManager = new MapManager('map', [], isAuthenticated);
+            window.mapManager.initialize();
+
+            // Initialize status manager if user is authenticated
+            if (isAuthenticated) {
+                window.statusManager = new StatusManager(isAuthenticated);
+            }
+
+            // Initialize infinite scroll manager
+            window.infiniteScrollManager = new InfiniteScrollManager(
+                '#facilitiesContainer',
+                window.mapManager,
+                {
+                    itemsPerPage: 20,
+                    maxItemsToKeep: 100,
+                    filterFormSelector: '#filterForm'
+                }
+            );
+
+            // "Locate me" button handler
+            document.getElementById('locateMe').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            window.mapManager.map.setView([lat, lng], 14);
+                        },
+                        function(error) {
+                            Utilities.showNotification('Could not get your location. Error: ' + error.message, 'error');
+                        }
+                    );
+                } else {
+                    Utilities.showNotification('Geolocation is not supported by your browser', 'error');
+                }
+            });
+
+            // Scroll to top button handler
+            document.getElementById('scrollToTop').addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Clear filters button handler
+            document.getElementById('clearFilters').addEventListener('click', function() {
+                const form = document.getElementById('filterForm');
+
+                // Reset all select elements to default
+                form.querySelectorAll('select').forEach(select => {
+                    select.value = '';
+                });
+
+                // Reset and reload
+                window.infiniteScrollManager.resetAndLoad();
+            });
+
+            // Update result count
+            function updateResultCount(count) {
+                document.getElementById('resultCount').textContent = count + ' total';
+            }
+
+            // Listen for count updates from infinite scroll manager
+            document.addEventListener('infiniteScrollCountUpdate', function(e) {
+                updateResultCount(e.detail.count);
+            });
+        });
+    </script>
+
+<?php require('template/footer.phtml') ?>

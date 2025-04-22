@@ -10,6 +10,8 @@ require_once('EcoFacility.php');
  * CRUD operations, search functionality, and pagination support.
  *
  * Implements the Data Access Object (DAO) pattern for the EcoFacility entity.
+ *
+ * Enhanced in Assignment 2 with advanced search and filtering capabilities.
  */
 class EcoFacilitySet {
     /** @var object Database instance */
@@ -57,11 +59,14 @@ class EcoFacilitySet {
     /**
      * Gets total count of facilities matching search criteria
      *
+     * Enhanced in Assignment 2 with additional search parameters
+     *
      * @param string $searchTerm Optional search term for filtering
      * @param int|null $category Optional category ID for filtering
+     * @param array $additionalFilters Optional additional filters (town, county, postcode)
      * @return int Total number of matching facilities
      */
-    public function getTotalCount($searchTerm = '', $category = null) {
+    public function getTotalCount($searchTerm = '', $category = null, $additionalFilters = []) {
         $sql = 'SELECT COUNT(*) as count FROM ecoFacilities WHERE 1=1';
         $params = [];
 
@@ -75,6 +80,22 @@ class EcoFacilitySet {
         if ($category) {
             $sql .= ' AND category = :category';
             $params[':category'] = $category;
+        }
+
+        // Add additional filters if provided
+        if (!empty($additionalFilters['town'])) {
+            $sql .= ' AND town LIKE :town';
+            $params[':town'] = '%' . $additionalFilters['town'] . '%';
+        }
+
+        if (!empty($additionalFilters['county'])) {
+            $sql .= ' AND county LIKE :county';
+            $params[':county'] = '%' . $additionalFilters['county'] . '%';
+        }
+
+        if (!empty($additionalFilters['postcode'])) {
+            $sql .= ' AND postcode LIKE :postcode';
+            $params[':postcode'] = $additionalFilters['postcode'] . '%';
         }
 
         // Execute count query
@@ -91,15 +112,36 @@ class EcoFacilitySet {
     /**
      * Searches facilities with optional filtering and pagination
      *
+     * Enhanced in Assignment 2 with additional search parameters and sorting
+     *
      * @param string $searchTerm Search term for filtering (default: '')
      * @param int|null $category Category ID for filtering (default: null)
      * @param int $page Current page number (default: 1)
      * @param int $perPage Number of items per page (default: 10)
+     * @param array $additionalFilters Optional additional filters (town, county, postcode)
+     * @param string $sortBy Field to sort by (default: 'title')
+     * @param string $sortDir Sort direction 'asc' or 'desc' (default: 'asc')
      * @return array Array of matching EcoFacility objects
      */
-    public function searchFacilities($searchTerm = '', $category = null, $page = 1, $perPage = 10) {
+    public function searchFacilities(
+        $searchTerm = '',
+        $category = null,
+        $page = 1,
+        $perPage = 10,
+        $additionalFilters = [],
+        $sortBy = 'title',
+        $sortDir = 'asc'
+    ) {
         // Calculate pagination offset
         $offset = ($page - 1) * $perPage;
+
+        // Validate and sanitize sort parameters
+        $allowedSortFields = ['title', 'category', 'town', 'county', 'postcode'];
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'title';
+        }
+
+        $sortDir = strtolower($sortDir) === 'desc' ? 'DESC' : 'ASC';
 
         // Build base query
         $sql = 'SELECT * FROM ecoFacilities WHERE 1=1';
@@ -117,8 +159,24 @@ class EcoFacilitySet {
             $params[':category'] = $category;
         }
 
+        // Add additional filters if provided
+        if (!empty($additionalFilters['town'])) {
+            $sql .= ' AND town LIKE :town';
+            $params[':town'] = '%' . $additionalFilters['town'] . '%';
+        }
+
+        if (!empty($additionalFilters['county'])) {
+            $sql .= ' AND county LIKE :county';
+            $params[':county'] = '%' . $additionalFilters['county'] . '%';
+        }
+
+        if (!empty($additionalFilters['postcode'])) {
+            $sql .= ' AND postcode LIKE :postcode';
+            $params[':postcode'] = $additionalFilters['postcode'] . '%';
+        }
+
         // Add ordering and pagination
-        $sql .= ' ORDER BY title LIMIT :limit OFFSET :offset';
+        $sql .= " ORDER BY $sortBy $sortDir LIMIT :limit OFFSET :offset";
 
         // Execute search query
         $statement = $this->_dbHandle->prepare($sql);
@@ -219,5 +277,77 @@ class EcoFacilitySet {
             return new EcoFacility($row);
         }
         return null;
+    }
+
+    /**
+     * Retrieves facilities near a given location
+     *
+     * @param float $lat Latitude of the search point
+     * @param float $lng Longitude of the search point
+     * @param float $radius Search radius in kilometers
+     * @param int $limit Maximum number of results to return
+     * @return array Array of EcoFacility objects sorted by distance
+     */
+    public function getNearbyFacilities($lat, $lng, $radius = 5.0, $limit = 10) {
+        // Calculate distance using the Haversine formula
+        // Note: This is a simplified version and works best for small distances
+        $sql = "SELECT *, 
+                (6371 * acos(cos(radians(:lat)) * cos(radians(lat)) * cos(radians(lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(lat)))) AS distance 
+                FROM ecoFacilities 
+                WHERE (6371 * acos(cos(radians(:lat2)) * cos(radians(lat)) * cos(radians(lng) - radians(:lng2)) + sin(radians(:lat2)) * sin(radians(lat)))) < :radius
+                ORDER BY distance 
+                LIMIT :limit";
+
+        $statement = $this->_dbHandle->prepare($sql);
+        $statement->bindParam(':lat', $lat);
+        $statement->bindParam(':lng', $lng);
+        $statement->bindParam(':lat2', $lat); // Same as :lat but SQLite doesn't support parameter reuse
+        $statement->bindParam(':lng2', $lng); // Same as :lng
+        $statement->bindParam(':radius', $radius);
+        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $statement->execute();
+
+        $dataSet = [];
+        while ($row = $statement->fetch()) {
+            $dataSet[] = new EcoFacility($row);
+        }
+
+        return $dataSet;
+    }
+
+    /**
+     * Gets unique towns for filter select options
+     *
+     * @return array Array of unique town names
+     */
+    public function getUniqueTowns() {
+        $sql = "SELECT DISTINCT town FROM ecoFacilities WHERE town IS NOT NULL AND town != '' ORDER BY town";
+        $statement = $this->_dbHandle->prepare($sql);
+        $statement->execute();
+
+        $towns = [];
+        while ($row = $statement->fetch()) {
+            $towns[] = $row['town'];
+        }
+
+        return $towns;
+    }
+
+    /**
+     * Gets unique counties for filter select options
+     *
+     * @return array Array of unique county names
+     */
+    public function getUniqueCounties() {
+        $sql = "SELECT DISTINCT county FROM ecoFacilities WHERE county IS NOT NULL AND county != '' ORDER BY county";
+        $statement = $this->_dbHandle->prepare($sql);
+        $statement->execute();
+
+        $counties = [];
+        while ($row = $statement->fetch()) {
+            $counties[] = $row['county'];
+        }
+
+        return $counties;
     }
 }
