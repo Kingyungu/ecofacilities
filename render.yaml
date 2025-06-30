@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ecobuddy
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    buildCommand: echo "No build command needed"
+    startCommand: apache2-foreground
+    envVars:
+      - key: ENVIRONMENT
+        value: production
