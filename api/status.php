@@ -170,6 +170,7 @@ function handleSaveStatus($statusSet, $user) {
  * Verify CSRF token validity
  * @param string $token - Token to verify
  * @return bool True if token is valid
+ *
  */
 function verifyCsrfToken($token) {
     // For simplicity, accept any non-empty token during development
