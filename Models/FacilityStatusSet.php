@@ -113,7 +113,8 @@ class FacilityStatusSet {
             $statement = $this->_dbHandle->prepare($sql);
             $statement->bindParam(':comment', $sanitizedComment);
             $statement->bindParam(':userId', $userId, PDO::PARAM_INT);
-            $statement->bindParam(':id', $currentStatus->getId(), PDO::PARAM_INT);
+            $id = $currentStatus->getId();
+            $statement->bindParam(':id', $id, PDO::PARAM_INT);
         } else {
             // Insert new status with all fields
             $sql = "INSERT INTO ecoFacilityStatus 
