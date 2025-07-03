@@ -28,7 +28,7 @@ class FacilityStatusSet {
      * @param int $facilityId The facility ID
      * @return FacilityStatus|null The facility status or null if not found
      */
-    public function getStatusForFacility(int $facilityId): ?FacilityStatus {
+    public function getStatusForFacility($facilityId) {
         $sql = "SELECT * FROM ecoFacilityStatus 
                 WHERE facilityId = :facilityId 
                 ORDER BY timestamp DESC, id DESC 
@@ -54,7 +54,7 @@ class FacilityStatusSet {
      * @param int $perPage Number of items per page
      * @return array Array of FacilityStatus objects
      */
-    public function getStatusHistoryForFacility(int $facilityId, int $page = 1, int $perPage = 10): array {
+    public function getStatusHistoryForFacility($facilityId, $page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
 
         $sql = "SELECT s.*, u.username 
@@ -68,8 +68,8 @@ class FacilityStatusSet {
         $statement->bindParam(':facilityId', $facilityId, PDO::PARAM_INT);
 
         // Fix: Use variables for bindValue to avoid "only variables can be passed by reference"
-        $limitValue = $perPage;
-        $offsetValue = $offset;
+        $limitValue = (int)$perPage;
+        $offsetValue = (int)$offset;
         $statement->bindValue(':limit', $limitValue, PDO::PARAM_INT);
         $statement->bindValue(':offset', $offsetValue, PDO::PARAM_INT);
         $statement->execute();
@@ -90,7 +90,7 @@ class FacilityStatusSet {
      * @param string $comment The status comment
      * @return bool True if successful, false otherwise
      */
-    public function updateStatus(int $facilityId, int $userId, string $comment): bool {
+    public function updateStatus($facilityId, $userId, $comment) {
         // Validate input
         if (empty($facilityId) || empty($comment)) {
             return false;
@@ -139,7 +139,7 @@ class FacilityStatusSet {
      * @param string $comment The status comment
      * @return bool True if successful, false otherwise
      */
-    public function addStatus(int $facilityId, int $userId, string $comment): bool {
+    public function addStatus($facilityId, $userId, $comment) {
         // Validate input
         if (empty($facilityId) || empty($comment)) {
             return false;
@@ -168,7 +168,7 @@ class FacilityStatusSet {
      * @param int $facilityId The facility ID
      * @return int The count of status updates
      */
-    public function getStatusCountForFacility(int $facilityId): int {
+    public function getStatusCountForFacility($facilityId) {
         $sql = "SELECT COUNT(*) as count FROM ecoFacilityStatus 
                 WHERE facilityId = :facilityId";
 
@@ -186,7 +186,7 @@ class FacilityStatusSet {
      * @param int $limit Number of recent updates to return
      * @return array Array of FacilityStatus objects
      */
-    public function getRecentStatusUpdates(int $limit = 10): array {
+    public function getRecentStatusUpdates($limit = 10) {
         $sql = "SELECT s.*, f.title as facilityTitle, u.username 
                 FROM ecoFacilityStatus s 
                 LEFT JOIN ecoFacilities f ON s.facilityId = f.id 
@@ -195,7 +195,8 @@ class FacilityStatusSet {
                 LIMIT :limit";
 
         $statement = $this->_dbHandle->prepare($sql);
-        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $limitValue = (int)$limit;
+        $statement->bindValue(':limit', $limitValue, PDO::PARAM_INT);
         $statement->execute();
 
         $statuses = [];
@@ -213,7 +214,7 @@ class FacilityStatusSet {
      * @param int $limit Number of updates to return
      * @return array Array of FacilityStatus objects
      */
-    public function getStatusUpdatesByUser(int $userId, int $limit = 20): array {
+    public function getStatusUpdatesByUser($userId, $limit = 20) {
         $sql = "SELECT s.*, f.title as facilityTitle 
                 FROM ecoFacilityStatus s 
                 LEFT JOIN ecoFacilities f ON s.facilityId = f.id 
@@ -223,7 +224,8 @@ class FacilityStatusSet {
 
         $statement = $this->_dbHandle->prepare($sql);
         $statement->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $limitValue = (int)$limit;
+        $statement->bindValue(':limit', $limitValue, PDO::PARAM_INT);
         $statement->execute();
 
         $statuses = [];
@@ -240,7 +242,7 @@ class FacilityStatusSet {
      * @param int $facilityId The facility ID
      * @return bool True if successful, false otherwise
      */
-    public function deleteStatusesForFacility(int $facilityId): bool {
+    public function deleteStatusesForFacility($facilityId) {
         $sql = "DELETE FROM ecoFacilityStatus 
                 WHERE facilityId = :facilityId";
 
@@ -256,7 +258,7 @@ class FacilityStatusSet {
      * @param int $statusId The status ID to delete
      * @return bool True if successful, false otherwise
      */
-    public function deleteStatus(int $statusId): bool {
+    public function deleteStatus($statusId) {
         $sql = "DELETE FROM ecoFacilityStatus 
                 WHERE id = :id";
 
