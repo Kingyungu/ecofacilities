@@ -3,12 +3,6 @@
  *
  * Manages facility status comments in the ecoBuddy system.
  * Handles adding, updating, and retrieving status comments via AJAX.
- *
- * Features:
- * - Status comment submission
- * - Modal interface for entering status
- * - AJAX requests for status operations
- * - Security and validation
  */
 class StatusManager {
     /**
@@ -21,11 +15,58 @@ class StatusManager {
         this.statusModalId = 'statusUpdateModal';
         this.currentFacilityId = null;
 
+        // Set up event delegation FIRST - this will work even if modal doesn't exist yet
+        this.setupEventDelegation();
+
         // Create modal element if it doesn't exist
         this.createModalElement();
+    }
 
-        // Set up event listeners
-        this.setupEventListeners();
+    /**
+     * Set up event delegation for save button clicks
+     * This uses event bubbling to catch clicks on the save button even if it's created later
+     */
+    setupEventDelegation() {
+        // Use event delegation on document body to catch save button clicks
+        document.body.addEventListener('click', (event) => {
+            // Check if the clicked element is our save button
+            if (event.target && event.target.id === 'saveStatusBtn') {
+                console.log('Save button clicked via event delegation!');
+                event.preventDefault();
+                event.stopPropagation();
+                this.saveStatus();
+            }
+        });
+        console.log('Event delegation set up for save button');
+    }
+
+    /**
+     * Get CSRF token from meta tag or other source
+     * @returns {string} CSRF token
+     */
+    getCSRFToken() {
+        // Try to get from meta tag first
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            return metaToken.getAttribute('content');
+        }
+
+        // Try to get from a global variable
+        if (typeof window.csrfToken !== 'undefined') {
+            return window.csrfToken;
+        }
+
+        // Try to get token from cookies
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrf_token=')) {
+                return cookie.substring('csrf_token='.length, cookie.length);
+            }
+        }
+
+        // Return empty string as fallback (your API accepts any token in dev mode)
+        return 'dev-token';
     }
 
     /**
@@ -34,6 +75,7 @@ class StatusManager {
     createModalElement() {
         // Check if modal already exists
         if (document.getElementById(this.statusModalId)) {
+            console.log('Modal already exists');
             return;
         }
 
@@ -78,19 +120,14 @@ class StatusManager {
         const modalContainer = document.createElement('div');
         modalContainer.innerHTML = modalHtml;
         document.body.appendChild(modalContainer.firstElementChild);
-    }
 
-    /**
-     * Set up event listeners for status operations
-     */
-    setupEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            // Handle status form submission
+        console.log('Modal created and added to DOM');
+
+        // Double-check that the button exists
+        setTimeout(() => {
             const saveBtn = document.getElementById('saveStatusBtn');
-            if (saveBtn) {
-                saveBtn.addEventListener('click', () => this.saveStatus());
-            }
-        });
+            console.log('Save button after creation:', saveBtn);
+        }, 100);
     }
 
     /**
@@ -98,6 +135,8 @@ class StatusManager {
      * @param {number} facilityId - ID of the facility to update
      */
     openStatusModal(facilityId) {
+        console.log('Opening status modal for facility:', facilityId);
+
         if (!this.isAuthenticated) {
             window.location.href = 'login.php';
             return;
@@ -109,21 +148,34 @@ class StatusManager {
         const facilityIdInput = document.getElementById('facilityId');
         if (facilityIdInput) {
             facilityIdInput.value = facilityId;
+            console.log('Set facility ID to:', facilityId);
+        } else {
+            console.error('Facility ID input not found!');
         }
+
+        // Clear any previous error messages
+        this.hideError();
 
         // Get current status if exists
         this.getExistingStatus(facilityId)
             .then(status => {
                 const statusTextarea = document.getElementById('statusComment');
-                if (statusTextarea && status) {
-                    statusTextarea.value = status;
+                if (statusTextarea) {
+                    statusTextarea.value = status || '';
+                    console.log('Set existing status:', status);
                 }
             })
             .catch(error => console.error('Error fetching status:', error));
 
         // Open the modal using Bootstrap
-        const modal = new bootstrap.Modal(document.getElementById(this.statusModalId));
-        modal.show();
+        const modalElement = document.getElementById(this.statusModalId);
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            console.log('Modal opened');
+        } else {
+            console.error('Modal element not found!');
+        }
     }
 
     /**
@@ -160,12 +212,19 @@ class StatusManager {
      * Save the status update
      */
     saveStatus() {
+        console.log('saveStatus() called');
+
         if (!this.isAuthenticated) {
             this.showError('You must be logged in to update status');
             return;
         }
 
         const form = document.getElementById('statusUpdateForm');
+        if (!form) {
+            console.error('Form not found!');
+            return;
+        }
+
         const formData = new FormData(form);
         formData.append('action', 'save');
 
@@ -189,6 +248,14 @@ class StatusManager {
             return;
         }
 
+        // Disable the save button during request
+        const saveBtn = document.getElementById('saveStatusBtn');
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            console.log('Save button disabled');
+        }
+
         // Make the AJAX request
         console.log('Sending AJAX request to api/status.php');
         fetch('api/status.php', {
@@ -206,25 +273,73 @@ class StatusManager {
                 console.log('Response data:', data);
                 if (data.success) {
                     // Close the modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById(this.statusModalId));
-                    modal.hide();
+                    const modalElement = document.getElementById(this.statusModalId);
+                    if (modalElement) {
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }
+
+                    // Show success message
+                    this.showSuccessMessage('Status updated successfully!');
 
                     // Refresh the page or update UI
-                    if (typeof mapManager !== 'undefined') {
-                        // If mapManager exists, update the marker popup
-                        this.updateMarkerPopups();
-                    } else {
-                        // Otherwise refresh the page
-                        window.location.reload();
-                    }
+                    setTimeout(() => window.location.reload(), 1000);
                 } else {
                     this.showError(data.message || 'Failed to update status');
                 }
             })
             .catch(error => {
                 console.error('Error saving status:', error);
-                this.showError('An error occurred while saving the status');
+                this.showError('An error occurred while saving the status. Please try again.');
+            })
+            .finally(() => {
+                // Re-enable the save button
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Status';
+                    console.log('Save button re-enabled');
+                }
             });
+    }
+
+    /**
+     * Show error message in the modal
+     * @param {string} message - Error message to display
+     */
+    showError(message) {
+        const errorDiv = document.getElementById('statusUpdateError');
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('d-none');
+        }
+        console.log('Error shown:', message);
+    }
+
+    /**
+     * Hide error message
+     */
+    hideError() {
+        const errorDiv = document.getElementById('statusUpdateError');
+        if (errorDiv) {
+            errorDiv.classList.add('d-none');
+        }
+    }
+
+    /**
+     * Show success message
+     * @param {string} message - Success message to display
+     */
+    showSuccessMessage(message) {
+        console.log('Success:', message);
+
+        // Simple alert for now (you can replace with a better notification system)
+        if (typeof Utilities !== 'undefined' && Utilities.showNotification) {
+            Utilities.showNotification(message, 'success');
+        } else {
+            alert(message);
+        }
     }
 
     /**
@@ -235,57 +350,10 @@ class StatusManager {
         fetch(`api/facilities.php?action=get&id=${this.currentFacilityId}&csrfToken=${this.csrfToken}`)
             .then(response => response.json())
             .then(data => {
-                if (data.success && typeof mapManager !== 'undefined') {
-                    mapManager.updateMarkerPopup(this.currentFacilityId, data.facility);
+                if (data.success && typeof window.mapManager !== 'undefined') {
+                    window.mapManager.updateMarkerPopup(this.currentFacilityId, data.facility);
                 }
             })
             .catch(error => console.error('Error updating marker:', error));
-    }
-
-    /**
-     * Display an error message in the modal
-     * @param {string} message - Error message to display
-     */
-    showError(message) {
-        const errorDiv = document.getElementById('statusUpdateError');
-        if (errorDiv) {
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('d-none');
-
-            // Hide the error after 3 seconds
-            setTimeout(() => {
-                errorDiv.classList.add('d-none');
-            }, 3000);
-        }
-    }
-
-    /**
-     * Get CSRF token from meta tag or cookie
-     * @returns {string} CSRF token
-     */
-    getCSRFToken() {
-        // Try to get token from meta tag
-        const metaTag = document.querySelector('meta[name="csrf-token"]');
-        if (metaTag) {
-            return metaTag.getAttribute('content');
-        }
-
-        // Fallback to a method to get from cookie (implementation depends on your system)
-        return this.getCSRFTokenFromCookie();
-    }
-
-    /**
-     * Extract CSRF token from cookies
-     * @returns {string} CSRF token or empty string if not found
-     */
-    getCSRFTokenFromCookie() {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.startsWith('csrf_token=')) {
-                return cookie.substring('csrf_token='.length, cookie.length);
-            }
-        }
-        return '';
     }
 }

@@ -14,10 +14,10 @@ class FacilityStatus {
     /** @var string The status comment text */
     protected $_comment;
 
-    /** @var int Default user ID since this column doesn't exist in database */
-    protected $_userId = 1;
+    /** @var int ID of the user who created this status */
+    protected $_userId;
 
-    /** @var string Default timestamp since this column doesn't exist in database */
+    /** @var string Timestamp when this status was created/updated */
     protected $_timestamp;
 
     /**
@@ -29,17 +29,15 @@ class FacilityStatus {
         $this->_id = $dbRow['id'];
         $this->_facilityId = $dbRow['facilityId'];
         $this->_comment = $dbRow['statusComment'];
-
-        // Set defaults for missing columns
-        $this->_userId = 1; // Default to user ID 1 (usually admin)
-        $this->_timestamp = date('Y-m-d H:i:s'); // Current timestamp
+        $this->_userId = $dbRow['userId'] ?? 1; // Default to 1 if not set
+        $this->_timestamp = $dbRow['timestamp'] ?? date('Y-m-d H:i:s');
     }
 
     /**
      * Get the status record ID
      * @return int The status ID
      */
-    public function getId() {
+    public function getId(): int {
         return $this->_id;
     }
 
@@ -47,7 +45,7 @@ class FacilityStatus {
      * Get the facility ID this status is associated with
      * @return int The facility ID
      */
-    public function getFacilityId() {
+    public function getFacilityId(): int {
         return $this->_facilityId;
     }
 
@@ -55,15 +53,15 @@ class FacilityStatus {
      * Get the status comment text
      * @return string The comment text
      */
-    public function getComment() {
+    public function getComment(): string {
         return $this->_comment;
     }
 
     /**
      * Get the ID of the user who created this status
-     * @return int The user ID (always 1 in this implementation)
+     * @return int The user ID
      */
-    public function getUserId() {
+    public function getUserId(): int {
         return $this->_userId;
     }
 
@@ -71,7 +69,7 @@ class FacilityStatus {
      * Get the timestamp when this status was created/updated
      * @return string The timestamp
      */
-    public function getTimestamp() {
+    public function getTimestamp(): string {
         return $this->_timestamp;
     }
 
@@ -79,15 +77,60 @@ class FacilityStatus {
      * Get the formatted timestamp for display
      * @return string Formatted date/time
      */
-    public function getFormattedTimestamp() {
-        return 'Recent update';
+    public function getFormattedTimestamp(): string {
+        $datetime = new DateTime($this->_timestamp);
+        return $datetime->format('M j, Y g:i A');
     }
 
     /**
      * Get time elapsed since this status was created/updated
      * @return string Human-readable time difference
      */
-    public function getTimeElapsed() {
-        return 'Recently';
+    public function getTimeElapsed(): string {
+        $datetime = new DateTime($this->_timestamp);
+        $now = new DateTime();
+        $interval = $now->diff($datetime);
+
+        if ($interval->days > 0) {
+            return $interval->days . ' day' . ($interval->days > 1 ? 's' : '') . ' ago';
+        } elseif ($interval->h > 0) {
+            return $interval->h . ' hour' . ($interval->h > 1 ? 's' : '') . ' ago';
+        } elseif ($interval->i > 0) {
+            return $interval->i . ' minute' . ($interval->i > 1 ? 's' : '') . ' ago';
+        } else {
+            return 'Just now';
+        }
+    }
+
+    /**
+     * Check if this status is recent (within last 24 hours)
+     * @return bool True if status is recent
+     */
+    public function isRecent(): bool {
+        $datetime = new DateTime($this->_timestamp);
+        $now = new DateTime();
+        $interval = $now->diff($datetime);
+
+        return $interval->days === 0;
+    }
+
+    /**
+     * Get a CSS class for styling based on age
+     * @return string CSS class name
+     */
+    public function getAgeClass(): string {
+        $datetime = new DateTime($this->_timestamp);
+        $now = new DateTime();
+        $interval = $now->diff($datetime);
+
+        if ($interval->days === 0) {
+            return 'status-recent';
+        } elseif ($interval->days <= 7) {
+            return 'status-week';
+        } elseif ($interval->days <= 30) {
+            return 'status-month';
+        } else {
+            return 'status-old';
+        }
     }
 }
